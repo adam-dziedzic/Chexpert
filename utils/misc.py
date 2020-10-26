@@ -1,4 +1,18 @@
 import numpy as np
+import getpass
+import json
+from easydict import EasyDict as edict
+
+
+def get_cfg(cfg_path):
+    with open(cfg_path) as f:
+        cfg = edict(json.load(f))
+
+    user = getpass.getuser()
+    for k, v in cfg.items():
+        if '{user}' in str(v):
+            cfg[k] = v.replace('{user}', user)
+    return cfg
 
 
 def lr_schedule(lr, lr_factor, epoch_now, lr_epochs):

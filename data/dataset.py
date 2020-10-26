@@ -5,11 +5,12 @@ import os
 from PIL import Image
 from data.imgaug import GetTransforms
 from data.utils import transform
+
 np.random.seed(0)
 
 
 class ImageDataset(Dataset):
-    def __init__(self, label_path, cfg, mode='train'):
+    def __init__(self, in_csv_path, cfg, mode='train'):
         self.cfg = cfg
         self._label_header = None
         self._image_paths = []
@@ -17,7 +18,7 @@ class ImageDataset(Dataset):
         self._mode = mode
         self.dict = [{'1.0': '1', '': '0', '0.0': '0', '-1.0': '0'},
                      {'1.0': '1', '': '0', '0.0': '0', '-1.0': '1'}, ]
-        with open(label_path) as f:
+        with open(cfg.data_path + in_csv_path) as f:
             header = f.readline().strip('\n').split(',')
             self._label_header = [
                 header[7],
@@ -45,12 +46,21 @@ class ImageDataset(Dataset):
                             flg_enhance = True
                 # labels = ([self.dict.get(n, n) for n in fields[5:]])
                 labels = list(map(int, labels))
-                self._image_paths.append(image_path)
-                assert os.path.exists(image_path), image_path
+                data_path_split = cfg.data_path.split('/')
+                image_path_split = image_path.split('/')
+                data_path_split = [x for x in data_path_split if x != '']
+                image_path_split = [x for x in image_path_split if x!= '']
+                if data_path_split[-1] == image_path_split[0]:
+                    full_image_path = data_path_split[:-1] + image_path_split
+                    full_image_path = "/" + "/".join(full_image_path)
+                else:
+                    full_image_path = cfg.data_path + image_path
+                self._image_paths.append(full_image_path)
+                assert os.path.exists(full_image_path), full_image_path
                 self._labels.append(labels)
                 if flg_enhance and self._mode == 'train':
                     for i in range(self.cfg.enhance_times):
-                        self._image_paths.append(image_path)
+                        self._image_paths.append(full_image_path)
                         self._labels.append(labels)
         self._num_image = len(self._image_paths)
 

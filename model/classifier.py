@@ -56,8 +56,7 @@ class Classifier(nn.Module):
             elif BACKBONES_TYPES[self.cfg.backbone] == 'densenet':
                 setattr(
                     self,
-                    "fc_" +
-                    str(index),
+                    "fc_" + str(index),
                     nn.Conv2d(
                         self.backbone.num_features *
                         self.expand,

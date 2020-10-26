@@ -1,0 +1,14 @@
+ssh://nicolas@localhost:3310/home/nicolas/venvs/chexpert/bin/python -u /home/nicolas/code/Chexpert-pycharm/bin/roc_ady_small.py
+Cardiomegaly auc 0.8632971506105835
+Edema auc 0.9141048824593128
+Consolidation auc 0.925409226190476
+Atelectasis auc 0.8973866666666668
+Pleural Effusion auc 0.911764705882353
+
+ssh://nicolas@localhost:3310/home/nicolas/venvs/chexpert/bin/python -u /home/nicolas/code/Chexpert-pycharm/bin/roc_ady_small.py
+Cardiomegaly auc 0.8632971506105835 acc 0.81
+Edema auc 0.9141048824593128 acc 0.515
+Consolidation auc 0.925409226190476 acc 0.655
+Atelectasis auc 0.8973866666666668 acc 0.815
+Pleural Effusion auc 0.911764705882353 acc 0.83
+
