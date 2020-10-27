@@ -17,6 +17,16 @@ def set_environment():
     torch.backends.cudnn.deterministic = True
 
 
+def check_test_data():
+    print('Check test data.')
+    user = getpass.getuser()
+    data_dir = f"/home/{user}/data/CheXpert-v1.0-small/"
+    all_xray_df = pd.read_csv(data_dir + 'valid.csv')
+    print('dev set size: ', all_xray_df.shape[0])
+    pd.set_option('display.max_columns', None)
+    print('print some dev samples:\n', all_xray_df.sample(3))
+
+
 def prepare_data():
     print('Prepare data.')
     user = getpass.getuser()
@@ -29,4 +39,5 @@ def prepare_data():
 
 
 if __name__ == "__main__":
+    check_test_data()
     prepare_data()

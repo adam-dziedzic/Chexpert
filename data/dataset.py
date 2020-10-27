@@ -46,6 +46,8 @@ class ImageDataset(Dataset):
                             flg_enhance = True
                 # labels = ([self.dict.get(n, n) for n in fields[5:]])
                 labels = list(map(int, labels))
+
+                # get full path to the image
                 data_path_split = cfg.data_path.split('/')
                 image_path_split = image_path.split('/')
                 data_path_split = [x for x in data_path_split if x != '']
@@ -55,9 +57,11 @@ class ImageDataset(Dataset):
                     full_image_path = "/" + "/".join(full_image_path)
                 else:
                     full_image_path = cfg.data_path + image_path
+
                 self._image_paths.append(full_image_path)
                 assert os.path.exists(full_image_path), full_image_path
                 self._labels.append(labels)
+
                 if flg_enhance and self._mode == 'train':
                     for i in range(self.cfg.enhance_times):
                         self._image_paths.append(full_image_path)

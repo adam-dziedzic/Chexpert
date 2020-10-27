@@ -1,16 +1,16 @@
-import os
-import sys
+import getpass
+
 import argparse
 import logging
-import json
-import time
-from easydict import EasyDict as edict
-import torch
 import numpy as np
-from torch.utils.data import DataLoader
-from torch.nn import DataParallel
+import os
+import sys
+import time
+import torch
 import torch.nn.functional as F
-import getpass
+from torch.nn import DataParallel
+from torch.utils.data import DataLoader
+
 from utils.misc import get_cfg
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../')
@@ -23,6 +23,13 @@ parser = argparse.ArgumentParser(description='Test model')
 
 parser.add_argument('--model_path', default='../config/', metavar='MODEL_PATH',
                     type=str, help="Path to the trained models")
+parser.add_argument('--model_name',
+                    # default='ady_small_pre_train.pth',
+                    # default='../bin/save-2020-10-27-train-from-scratch-chexpert-small-densenet/best1.ckpt',
+                    # default='../bin/save-2020-10-27-train-from-scratch-chexpert-small-densenet/best2.ckpt',
+                    default='../bin/save-2020-10-27-train-from-scratch-chexpert-small-densenet/best3.ckpt',
+                    metavar='MODEL_NAME',
+                    type=str, help="Name of the trained model.")
 parser.add_argument('--data_path', default=f'/home/{user}/data/',
                     metavar='DATA_PATH',
                     type=str, help="Path to the data set")
@@ -105,7 +112,7 @@ def run(args):
 
     model = Classifier(cfg)
     model = DataParallel(model, device_ids=device_ids).to(device).eval()
-    ckpt_path = os.path.join(args.model_path, 'ady_small_pre_train.pth')
+    ckpt_path = os.path.join(args.model_path, args.model_name)
     ckpt = torch.load(ckpt_path, map_location=device)
     if 'state_dict' in ckpt:
         model.module.load_state_dict(ckpt['state_dict'])
@@ -119,10 +126,10 @@ def run(args):
 
     test_epoch(cfg, args, model, dataloader_test, args.out_csv_path)
 
-    if 'step' in ckpt:
-        print('Save best is step :', ckpt['step'])
-    if 'auc_dev_best' in ckpt:
-        print('Save bset is AUC :', ckpt['auc_dev_best'])
+    if isinstance(ckpt, dict):
+        for key in ckpt.keys():
+            if key not in ['state_dict', '__len__']:
+                print(f'Saved best {key}:', ckpt[key])
 
 
 def main():
