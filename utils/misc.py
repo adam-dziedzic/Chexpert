@@ -2,6 +2,14 @@ import numpy as np
 import getpass
 import json
 from easydict import EasyDict as edict
+from datetime import datetime
+
+
+def get_timestamp():
+    dateTimeObj = datetime.now()
+    # timestampStr = dateTimeObj.strftime("%Y-%B-%d-(%H:%M:%S.%f)")
+    timestampStr = dateTimeObj.strftime("%Y-%m-%d-%H-%M-%S-%f")
+    return timestampStr
 
 
 def get_cfg(cfg_path):

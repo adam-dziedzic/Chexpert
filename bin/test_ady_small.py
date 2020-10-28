@@ -24,12 +24,20 @@ parser = argparse.ArgumentParser(description='Test model')
 parser.add_argument('--model_path', default='../config/', metavar='MODEL_PATH',
                     type=str, help="Path to the trained models")
 parser.add_argument('--model_name',
-                    # default='ady_small_pre_train.pth',
+                    default='ady_small_pre_train.pth',
                     # default='../bin/save-2020-10-27-train-from-scratch-chexpert-small-densenet/best1.ckpt',
                     # default='../bin/save-2020-10-27-train-from-scratch-chexpert-small-densenet/best2.ckpt',
-                    default='../bin/save-2020-10-27-train-from-scratch-chexpert-small-densenet/best3.ckpt',
+                    # default='../bin/save-2020-10-27-train-from-scratch-chexpert-small-densenet/best3.ckpt',
                     metavar='MODEL_NAME',
                     type=str, help="Name of the trained model.")
+parser.add_argument(
+    '--in_csv_path',
+    # default=f'/home/{user}/data/CheXpert-v1.0-small/valid.csv',
+    # default='valid.csv',
+    default='train.csv',
+    metavar='IN_CSV_PATH',
+    type=str,
+    help="Path to the csv file about the data (the metadata file).")
 parser.add_argument('--data_path', default=f'/home/{user}/data/',
                     metavar='DATA_PATH',
                     type=str, help="Path to the data set")
@@ -120,7 +128,12 @@ def run(args):
         model.module.load_state_dict(ckpt)
 
     dataloader_test = DataLoader(
-        ImageDataset(in_csv_path=cfg.dev_csv, cfg=cfg, mode='test'),
+        ImageDataset(
+            # in_csv_path=cfg.dev_csv,
+            in_csv_path=args.in_csv_path,
+            cfg=cfg,
+            mode='test',
+        ),
         batch_size=cfg.dev_batch_size, num_workers=args.num_workers,
         drop_last=False, shuffle=False)
 
@@ -133,7 +146,10 @@ def run(args):
 
 
 def main():
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(
+        # level=logging.INFO,
+        level=logging.ERROR,
+    )
 
     args = parser.parse_args()
     run(args)

@@ -137,7 +137,7 @@ def densenet121(cfg, **kwargs):
     model = DenseNet(num_init_features=64, growth_rate=32, block_config=(6, 12, 24, 16),  # noqa
                      norm_type=cfg.norm_type, **kwargs)
     if cfg.pretrained:
-        # '.'s are no longer allowed in module names, but pervious _DenseLayer
+        # '.'s are no longer allowed in module names, but previous _DenseLayer
         # has keys 'norm.1', 'relu.1', 'conv.1', 'norm.2', 'relu.2', 'conv.2'.
         # They are also in the checkpoints in model_urls. This pattern is used
         # to find such keys.
