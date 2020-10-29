@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../')
-from data.utils import transform # noqa
+from data.data_utils import transform # noqa
 from model.utils import tensor2numpy # noqa
 
 

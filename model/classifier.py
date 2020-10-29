@@ -159,4 +159,6 @@ class Classifier(nn.Module):
             logit = logit.squeeze(-1).squeeze(-1)
             logits.append(logit)
 
+        # if len(logits) == 1:
+        #     logits = logits[0]
         return (logits, logit_maps)

@@ -3,6 +3,8 @@
   "train_csv": "train.csv",
   "dev_csv": "valid.csv",
   "backbone": "densenet121",
+  "train_steps": 0,
+  "classification_type": "multi-class",
   "width": 512,
   "height": 512,
   "long_side": 512,
@@ -18,13 +20,17 @@
     4
   ],
   "batch_weight": true,
+  "weight_beta": 0.9999,
   "enhance_index": [],
   "enhance_times": 1,
   "pos_weight": [
+    1,
+    1,
+    1,
     1
   ],
-  "train_batch_size": 32,
-  "dev_batch_size": 56,
+  "train_batch_size": 8,
+  "dev_batch_size": 8,
   "pretrained": true,
   "log_every": 10,
   "test_every": 100,
@@ -47,10 +53,6 @@
   "best_target": "auc",
   "save_top_k": 3,
   "save_index": [
-    0,
-    1,
-    2,
-    3,
-    4
+    0
   ]
 }

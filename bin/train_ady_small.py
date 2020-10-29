@@ -22,19 +22,23 @@ torch.cuda.manual_seed_all(0)
 from data.dataset import ImageDataset  # noqa
 from model.classifier import Classifier  # noqa
 from utils.misc import get_cfg  # noqa
+from utils.misc import get_timestamp  # noqa
 from utils.misc import lr_schedule  # noqa
 from model.utils import get_optimizer  # noqa
 
 import getpass
 
 user = getpass.getuser()
+timestamp = get_timestamp()
 
 parser = argparse.ArgumentParser(description='Train model')
 parser.add_argument('--cfg_path',
                     default='../config/ady_small.json',
                     metavar='CFG_PATH', type=str,
                     help="Path to the config file in json format")
-parser.add_argument('--save_path', default='./save', metavar='SAVE_PATH',
+parser.add_argument('--save_path',
+                    default=f'./save_{timestamp}',
+                    metavar='SAVE_PATH',
                     type=str,
                     help="Path to the saved models")
 parser.add_argument('--num_workers', default=8, type=int,
@@ -88,7 +92,10 @@ def train_epoch(summary, summary_dev, cfg, args, model, dataloader,
     model.train()
     device_ids = list(map(int, args.device_ids.split(',')))
     device = torch.device('cuda:{}'.format(device_ids[0]))
-    steps = len(dataloader)
+    if cfg.train_steps == 0:
+        steps = len(dataloader)
+    else:
+        steps = cfg.train_steps
     dataiter = iter(dataloader)
     label_header = dataloader.dataset._label_header
     num_tasks = len(cfg.num_classes)
@@ -264,6 +271,8 @@ def test_epoch(summary, cfg, args, model, dataloader):
             output_tensor = torch.sigmoid(
                 output[t].view(-1)).cpu().detach().numpy()
             target_tensor = target[:, t].view(-1).cpu().detach().numpy()
+            print('output_tensor: ', output_tensor)
+            print('target_tensor: ', target_tensor)
             if step == 0:
                 predlist[t] = output_tensor
                 true_list[t] = target_tensor

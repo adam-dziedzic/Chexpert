@@ -4,7 +4,7 @@ import cv2
 import os
 from PIL import Image
 from data.imgaug import GetTransforms
-from data.utils import transform
+from data.data_utils import transform
 
 np.random.seed(0)
 

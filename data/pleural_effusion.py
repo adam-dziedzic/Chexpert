@@ -4,7 +4,10 @@ import cv2
 import os
 from PIL import Image
 from data.imgaug import GetTransforms
-from data.utils import transform
+from data.data_utils import transform
+from torch.utils.data import DataLoader
+from utils.misc import get_cfg
+from utils.misc import count_samples_per_class
 
 np.random.seed(0)
 
@@ -20,8 +23,9 @@ class PleuralEffusionDataset(Dataset):
         with open(cfg.data_path + in_csv_path) as f:
             header = f.readline().strip('\n').split(',')
             assert header[15] == 'Pleural Effusion'
-            self._label_header = header[15]
+            self._label_header = [header[15]]
             for line in f:
+                labels = []
                 fields = line.strip('\n').split(',')
                 image_path = fields[0]
 
@@ -40,9 +44,23 @@ class PleuralEffusionDataset(Dataset):
                 assert os.path.exists(full_image_path), full_image_path
 
                 # get the label
-                self._labels.append(fields[15])
+                labels.append(self.dict.get(fields[15]))
+                self._labels.append(labels)
 
         self._num_image = len(self._image_paths)
+
+    def sample_counts_per_class(self):
+        if not hasattr(self, '_sample_counts_per_class'):
+            self._sample_counts_per_class = self._get_sample_counts_per_class()
+        return self._sample_counts_per_class
+
+    def _get_sample_counts_per_class(self):
+        labels = np.array(self._labels).reshape(-1)
+        uniques = np.unique(labels)
+        counts = {u: 0 for u in uniques}
+        for u in labels:
+            counts[u] += 1
+        return counts
 
     def __len__(self):
         return self._num_image
@@ -54,7 +72,7 @@ class PleuralEffusionDataset(Dataset):
             image = GetTransforms(image, type=self.cfg.use_transforms_type)
         image = np.array(image)
         image = transform(image, self.cfg)
-        label = np.array(self._labels[idx]).astype(np.float32)
+        label = np.array(self._labels[idx])
 
         path = self._image_paths[idx]
 
@@ -66,3 +84,48 @@ class PleuralEffusionDataset(Dataset):
             return (image, path, label)
         else:
             raise Exception('Unknown mode : {}'.format(self._mode))
+
+
+if __name__ == "__main__":
+    cfg = get_cfg('../config/pleural_effusion_small.json')
+    train_dataset = PleuralEffusionDataset(
+        in_csv_path=cfg.train_csv, cfg=cfg,
+        mode='train')
+    dataloader_train = DataLoader(
+        train_dataset,
+        batch_size=cfg.train_batch_size, num_workers=1,
+        drop_last=True, shuffle=False)
+    steps = len(dataloader_train)
+    dataiter = iter(dataloader_train)
+    targets = []
+    for step in range(3):
+        image, target = next(dataiter)
+        print('image shape: ', image.shape)
+        print('target: ', target)
+        targets += list(target.squeeze().squeeze().numpy())
+
+    len_targets = len(targets)
+    print('targets len: ', len_targets)
+    targets = np.array(targets)
+    uniques = np.unique(targets)
+    print('uniques len: ', len(uniques))
+    print('uniques: ', uniques)
+    counts = {u: 0 for u in uniques}
+    for u in targets:
+        counts[u] += 1
+    print('counts: ', counts)
+    print('count values: ', counts.values())
+    sum_counts = sum(counts.values())
+    print('sum_counts: ', sum_counts)
+    assert sum_counts == len_targets
+
+    # counts = count_samples_per_class(dataloader=dataloader_train)
+    counts = train_dataset.sample_counts_per_class()
+    print('counts on the whole dataset: ', counts)
+
+    from utils.misc import class_wise_loss_reweighting
+    samples_per_cls = list(counts.values())
+    weights = class_wise_loss_reweighting(
+        beta=0.9999, samples_per_cls=samples_per_cls)
+    print('weights: ', weights)
+

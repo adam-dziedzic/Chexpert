@@ -9,7 +9,7 @@ import json
 from easydict import EasyDict as edict
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../')
 from model.classifier import Classifier # noqa
-from data.utils import transform # noqa
+from data.data_utils import transform # noqa
 from utils.heatmaper import Heatmaper # noqa
 
 torch.manual_seed(0)

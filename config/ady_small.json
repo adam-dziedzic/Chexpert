@@ -35,6 +35,7 @@
     1
   ],
   "train_batch_size": 32,
+  "train_steps": 0,
   "dev_batch_size": 56,
   "pretrained": true,
   "log_every": 10,
