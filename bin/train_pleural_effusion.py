@@ -65,26 +65,28 @@ def get_loss(output, target, index, device, cfg):
     output = output[index]
 
     if cfg.criterion == 'BCE':
-        if cfg.batch_weight:
-            weight = (target.size()[0] - target.sum()) / target.sum()
-        else:
-            pos_weight = torch.from_numpy(
-                np.array(cfg.pos_weight,
-                         dtype=np.float32)).to(device).type_as(target)
-            weight = pos_weight[index]
-
         for num_class in cfg.num_classes:
             assert num_class == 1
-        if target.sum() == 0:
-            loss = torch.tensor(0., requires_grad=True).to(device)
+        target = target.view(-1)
+        output = output.view(-1)
+        pos_weight = torch.from_numpy(
+            np.array(cfg.pos_weight,
+                     dtype=np.float32)).to(device).type_as(target)
+        if cfg.batch_weight:
+            if target.sum() == 0:
+                loss = torch.tensor(0., requires_grad=True).to(device)
+            else:
+                weight = (target.size()[0] - target.sum()) / (target.sum())
+                loss = F.binary_cross_entropy_with_logits(
+                    output, target, pos_weight=weight)
         else:
             loss = F.binary_cross_entropy_with_logits(
-                output, target,
-                pos_weight=weight)
+                output, target, pos_weight=pos_weight[index])
+
         pred = torch.sigmoid(output).ge(0.5).float()
     elif cfg.criterion == 'CE':
         assert len(cfg.num_classes) == 1
-        assert cfg.num_classes[0] == 4
+        assert cfg.num_classes[0] == 2
         if cfg.weight_beta == -1.0:
             loss = F.cross_entropy(input=output, target=target)
         else:

@@ -5,9 +5,6 @@ import os
 from PIL import Image
 from data.imgaug import GetTransforms
 from data.data_utils import transform
-from torch.utils.data import DataLoader
-from utils.misc import get_cfg
-from utils.misc import count_samples_per_class
 
 np.random.seed(0)
 
@@ -19,7 +16,8 @@ class PleuralEffusionDataset(Dataset):
         self._image_paths = []
         self._labels = []
         self._mode = mode
-        self.dict = {'1.0': 1, '': 0, '-1.0': 2, '0.0': 3}
+        # self.dict = {'1.0': 1, '': 0, '-1.0': 2, '0.0': 3}
+        self.dict = cfg.class_mapping
         with open(cfg.data_path + in_csv_path) as f:
             header = f.readline().strip('\n').split(',')
             assert header[15] == 'Pleural Effusion'
@@ -72,7 +70,7 @@ class PleuralEffusionDataset(Dataset):
             image = GetTransforms(image, type=self.cfg.use_transforms_type)
         image = np.array(image)
         image = transform(image, self.cfg)
-        label = np.array(self._labels[idx])
+        label = np.array(self._labels[idx]).astype(np.float32)
 
         path = self._image_paths[idx]
 
@@ -87,6 +85,9 @@ class PleuralEffusionDataset(Dataset):
 
 
 if __name__ == "__main__":
+    from torch.utils.data import DataLoader
+    from utils.misc import get_cfg
+
     cfg = get_cfg('../config/pleural_effusion_small.json')
     train_dataset = PleuralEffusionDataset(
         in_csv_path=cfg.train_csv, cfg=cfg,
@@ -100,8 +101,8 @@ if __name__ == "__main__":
     targets = []
     for step in range(3):
         image, target = next(dataiter)
-        print('image shape: ', image.shape)
-        print('target: ', target)
+        print('image shape: ', image.shape, image.device, image.dtype)
+        print('target: ', target, target.device, target.dtype, target.shape)
         targets += list(target.squeeze().squeeze().numpy())
 
     len_targets = len(targets)
@@ -124,8 +125,8 @@ if __name__ == "__main__":
     print('counts on the whole dataset: ', counts)
 
     from utils.misc import class_wise_loss_reweighting
+
     samples_per_cls = list(counts.values())
     weights = class_wise_loss_reweighting(
         beta=0.9999, samples_per_cls=samples_per_cls)
     print('weights: ', weights)
-

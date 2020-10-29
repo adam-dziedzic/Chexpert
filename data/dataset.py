@@ -51,7 +51,7 @@ class ImageDataset(Dataset):
                 data_path_split = cfg.data_path.split('/')
                 image_path_split = image_path.split('/')
                 data_path_split = [x for x in data_path_split if x != '']
-                image_path_split = [x for x in image_path_split if x!= '']
+                image_path_split = [x for x in image_path_split if x != '']
                 if data_path_split[-1] == image_path_split[0]:
                     full_image_path = data_path_split[:-1] + image_path_split
                     full_image_path = "/" + "/".join(full_image_path)
@@ -90,3 +90,51 @@ class ImageDataset(Dataset):
             return (image, path, labels)
         else:
             raise Exception('Unknown mode : {}'.format(self._mode))
+
+
+if __name__ == "__main__":
+    from torch.utils.data import DataLoader
+    from utils.misc import get_cfg
+
+    cfg = get_cfg('../config/ady_small.json')
+    train_dataset = ImageDataset(
+        in_csv_path=cfg.train_csv, cfg=cfg,
+        mode='train')
+    dataloader_train = DataLoader(
+        train_dataset,
+        batch_size=cfg.train_batch_size, num_workers=1,
+        drop_last=True, shuffle=False)
+    steps = len(dataloader_train)
+    dataiter = iter(dataloader_train)
+    targets = []
+    for step in range(3):
+        image, target = next(dataiter)
+        print('image shape: ', image.shape, image.device, image.dtype)
+        print('target: ', target, target.device, target.dtype, target.shape)
+        targets += list(target.squeeze().squeeze().numpy())
+
+    len_targets = len(targets)
+    print('targets len: ', len_targets)
+    targets = np.array(targets)
+    uniques = np.unique(targets)
+    print('uniques len: ', len(uniques))
+    print('uniques: ', uniques)
+    counts = {u: 0 for u in uniques}
+    for u in targets:
+        counts[u] += 1
+    print('counts: ', counts)
+    print('count values: ', counts.values())
+    sum_counts = sum(counts.values())
+    print('sum_counts: ', sum_counts)
+    assert sum_counts == len_targets
+
+    # counts = count_samples_per_class(dataloader=dataloader_train)
+    counts = train_dataset.sample_counts_per_class()
+    print('counts on the whole dataset: ', counts)
+
+    from utils.misc import class_wise_loss_reweighting
+
+    samples_per_cls = list(counts.values())
+    weights = class_wise_loss_reweighting(
+        beta=0.9999, samples_per_cls=samples_per_cls)
+    print('weights: ', weights)
