@@ -33,7 +33,7 @@
     1,
     1
   ],
-  "train_batch_size": 64,
+  "train_batch_size": 56,
   "dev_batch_size": 56,
   "pretrained": true,
   "log_every": 10,
