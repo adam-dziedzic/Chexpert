@@ -3,12 +3,7 @@
   "train_csv": "train.csv",
   "dev_csv": "valid.csv",
   "backbone": "densenet121",
-  "class_mapping": {
-    "1.0": 1,
-    "": 0,
-    "0.0": 0,
-    "-1.0": 0
-  },
+  "disease": "Cardiomegaly",
   "num_classes": [
     1
   ],
@@ -27,7 +22,10 @@
   "border_pad": "pixel_mean",
   "batch_weight": true,
   "weight_beta": 0.9999,
-  "enhance_index": [],
+  "enhance_index": [
+    7,
+    11
+  ],
   "enhance_times": 1,
   "pos_weight": [
     1,
