@@ -3,11 +3,11 @@
   "train_csv": "train.csv",
   "dev_csv": "valid.csv",
   "backbone": "densenet121",
-  "disease": "Cardiomegaly",
+  "disease": "Consolidation",
   "num_classes": [
     1
   ],
-  "train_steps": 2,
+  "train_steps": 0,
   "classification_type": "binary",
   "width": 512,
   "height": 512,
@@ -31,7 +31,7 @@
     1,
     1
   ],
-  "train_batch_size": 48,
+  "train_batch_size": 32,
   "dev_batch_size": 56,
   "pretrained": true,
   "log_every": 10,
