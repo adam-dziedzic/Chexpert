@@ -81,5 +81,42 @@ echo train_${DATASET}_${timestamp}.txt
 (venv-tf-py3) dockuser@nic3:~/code/Chexpert/bin$ echo train_${DATASET}_${timestamp}.txt
 train_single_disease_2020-10-29-23-22-26-089611049.txt
 
+# Consolidation
+timestamp=$(date +%Y-%m-%d-%H-%M-%S-%N)
+DATASET='single_disease'
+CUDA_VISIBLE_DEVICES=0,1,2,3
+PYTHONPATH=../
+nohup python train_single_disease.py \
+--verbose False \
+>> train_${DATASET}_${timestamp}.txt 2>&1 &
+echo train_${DATASET}_${timestamp}.txt
+[1] 3313
+(venv-tf-py3) dockuser@nic3:~/code/Chexpert/bin$ echo train_${DATASET}_${timestamp}.txt
+train_single_disease_2020-10-30-11-03-17-156383871.txt
 
+# Cardiomegaly
+timestamp=$(date +%Y-%m-%d-%H-%M-%S-%N)
+DATASET='single_disease'
+CUDA_VISIBLE_DEVICES=0,1,2,3
+PYTHONPATH=../
+nohup python train_single_disease.py \
+--verbose False \
+>> train_${DATASET}_${timestamp}.txt 2>&1 &
+echo train_${DATASET}_${timestamp}.txt
+[1] 3316
+dockuser@nic2:~/code/Chexpert/bin$ echo train_${DATASET}_${timestamp}.txt
+train_single_disease_2020-10-30-11-04-39-834228501.txt
+
+# Pleural Effusion
+timestamp=$(date +%Y-%m-%d-%H-%M-%S-%N)
+DATASET='single_disease'
+CUDA_VISIBLE_DEVICES=0,1,2,3
+PYTHONPATH=../
+nohup python train_single_disease.py \
+--verbose False \
+>> train_${DATASET}_${timestamp}.txt 2>&1 &
+echo train_${DATASET}_${timestamp}.txt
+[1] 414424
+(chexpert) nicolas@equus:~/code/Chexpert-pycharm/bin$ echo train_${DATASET}_${timestamp}.txt
+train_single_disease_2020-10-30-11-08-26-208659344.txt
 

@@ -16,9 +16,15 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/../')
 
 parser = argparse.ArgumentParser(description='Plot ROC')
 
-parser.add_argument('--pred_csv_path', default='test/test.csv',
+parser.add_argument('--pred_csv_path',
+                    default='',
+                    # default='test/test.csv',
                     metavar='PRED_CSV_PATH', type=str,
                     help="Path to the prediction in csv")
+parser.add_argument('--disease',
+                    default='Pleural Effusion',
+                    type=str,
+                    help='Name of the disease.')
 parser.add_argument('--true_csv_path',
                     # default='dev.csv',
                     default=f'/home/{user}/data/CheXpert-v1.0-small/valid.csv',
@@ -76,7 +82,7 @@ def transform_csv(input_path, output_path):
      csv or test csv from Path to Study
     """
     infile = pd.read_csv(input_path)
-    infile = infile.fillna('Unknown')
+    infile = infile.fillna('')
     infile.Path.str.split('/')
     infile['Study'] = infile.Path.apply(get_study)
     outfile = infile.drop('Path', axis=1).groupby('Study').max().reset_index()
@@ -89,7 +95,7 @@ def transform_csv_en(input_path, output_path):
      csv or test csv from Path to Study
     """
     infile = pd.read_csv(input_path)
-    infile = infile.fillna('Unknown')
+    infile = infile.fillna('')
     infile.Path.str.split('/')
     infile['Study'] = infile.Path.apply(get_study)
     outfile = infile.drop('Path', axis=1).groupby('Study').mean().reset_index()

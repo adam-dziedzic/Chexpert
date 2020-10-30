@@ -3,7 +3,7 @@
   "train_csv": "train.csv",
   "dev_csv": "valid.csv",
   "backbone": "densenet121",
-  "disease": "Atelectasis",
+  "disease": "Consolidation",
   "num_classes": [
     1
   ],

@@ -1,3 +1,5 @@
+,,,,,0,1,2,3,4,5,6,7,8,9,10,11,12,13
+0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18
 Path,Sex,Age,Frontal/Lateral,AP/PA,No Finding,Enlarged Cardiomediastinum,Cardiomegaly,Lung Opacity,Lung Lesion,Edema,Consolidation,Pneumonia,Atelectasis,Pneumothorax,Pleural Effusion,Pleural Other,Fracture,Support Devices
 CheXpert-v1.0-small/valid/patient64541/study1/view1_frontal.jpg,Male,73,Frontal,AP,0,1,1,1,0,0,0,0,0,0,0,0,0,0
 CheXpert-v1.0-small/valid/patient64542/study1/view1_frontal.jpg,Male,70,Frontal,PA,0,0,0,0,0,0,0,0,0,0,0,0,0,1
